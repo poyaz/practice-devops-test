@@ -2,10 +2,4 @@ version: "3.2"
 services:
   terraform:
     volumes:
-      - $PWD/terraform:/app
       - $PWD/tmp/e2e/vars/:/tmp/vars
-    working_dir: /app
-    network_mode: host
-    entrypoint: /bin/sh
-    tty: true
-    restart: no
