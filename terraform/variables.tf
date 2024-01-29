@@ -28,3 +28,20 @@ variable "kubespray_install_proxy_http" {
 variable "kubespray_install_proxy_https" {
   type = string
 }
+
+variable "flux_git_repo" {
+  type    = string
+  default = "https://github.com/poyaz/practice-devops-test.git"
+}
+
+variable "flux_git_branch" {
+  type    = string
+  default = "main"
+}
+
+variable "flux_git_http_auth" {
+  type = object({
+    username = string
+    password = string
+  })
+}

@@ -1,8 +1,8 @@
 terraform {
   required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 3.0.1"
+    flux = {
+      source  = "fluxcd/flux"
+      version = "~> 1.2.2"
     }
   }
 }
