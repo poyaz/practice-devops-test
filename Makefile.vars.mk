@@ -4,7 +4,9 @@ E2E_KUBESPRAY_PROXY ?=
 
 E2E_COMPOSE_EXTRA = -f ./docker/e2e/docker-compose.yml
 E2E_COMPOSE_CLI = docker compose -f docker-compose.yml $(COMPOSE_OPTIONS) $(E2E_COMPOSE_EXTRA)
-E2E_TERRAFORM_EXEC = $(E2E_COMPOSE_CLI) exec -T terraform sh
+
+COMPOSE_CLI = docker compose -f docker-compose.yml $(COMPOSE_OPTIONS)
+COMPOSE_RUN_SERVICE = run --rm --entrypoint '' -T terraform sh
 
 define E2E_TERRAFORM_VARS
 machines = {
@@ -25,11 +27,18 @@ E2E_TERRAFORM_VARS := $(E2E_TERRAFORM_VARS)\nkubespray_install_proxy_http = "$(E
 E2E_TERRAFORM_VARS := $(E2E_TERRAFORM_VARS)\nubespray_install_proxy_https = "$(E2E_KUBESPRAY_PROXY)"
 endif
 
-define DOCKER_SCRIPT
-docker compose $(COMPOSE_OPTIONS) exec -T terraform sh <<'EOF'
+define E2E_DOCKER_EXEC
+E2E_NO_PROXY=$(VAGRANT_SERVER_IP) $(E2E_COMPOSE_CLI) $(COMPOSE_RUN_SERVICE) <<'EOF'
 	ls -al
 	whoami
 	ls /tmp/vars
 	cat /tmp/vars
+EOF
+endef
+
+define DOCKER_EXEC
+$(COMPOSE_CLI) $(COMPOSE_RUN_SERVICE) <<'EOF'
+	ls -al
+	whoami
 EOF
 endef
