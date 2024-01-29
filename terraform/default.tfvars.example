@@ -1,0 +1,11 @@
+machines = {
+  "master-0" : {
+    node_type : "both",
+    node_ip : "",
+    ssh : {
+      port     = 22
+      username = ""
+      password = ""
+    }
+  }
+}
