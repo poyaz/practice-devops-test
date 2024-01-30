@@ -9,3 +9,8 @@ machines = {
     }
   }
 }
+
+flux_git_http_auth = {
+  username: ""
+  password: ""
+}
