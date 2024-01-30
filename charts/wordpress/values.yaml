@@ -1,0 +1,152 @@
+# Default values for wordpress.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+clusterDomain: ""
+
+imagePullSecrets: [ ]
+
+mysql:
+  image:
+    repository: mysql
+    pullPolicy: IfNotPresent
+    tag: 8
+
+  config:
+    rootPassword:
+      secretRef: ""
+      secretRefKey: ""
+    dbName:
+      name: ""
+      configmapRef: ""
+      configmapRefKey: ""
+    dbAuth:
+      secretRef: ""
+      userSecretRefKey: ""
+      passSecretRefKey: ""
+
+phpmyadmin:
+  image:
+    repository: phpmyadmin/phpmyadmin
+    pullPolicy: IfNotPresent
+    tag: ""
+
+  replicaCount: 1
+
+wordpress:
+  image:
+    repository: bitnami/wordpress
+    pullPolicy: IfNotPresent
+    tag: "6"
+
+  config:
+    wordpressUsername:
+      value: ""
+      secretRef: ""
+      secretKey: ""
+    wordpressPassword:
+      value: ""
+      secretRef: ""
+      secretKey: ""
+    wordpressEmail:
+      value: ""
+      configmapRef: ""
+      configmapKey: ""
+    wordpressFirstName:
+      value: ""
+      configmapRef: ""
+      configmapKey: ""
+    wordpressLastName:
+      value: ""
+      configmapRef: ""
+      configmapKey: ""
+    wordpressBlogName:
+      value: ""
+      configmapRef: ""
+      configmapKey: ""
+
+podAnnotations:
+  mysql: { }
+  phpmyadmin: { }
+  wordpress: { }
+
+podLabels:
+  mysql: { }
+  phpmyadmin: { }
+  wordpress: { }
+
+service:
+  mysql:
+    type: ClusterIP
+    port: 3306
+  phpmyadmin:
+    type: ClusterIP
+    port: 80
+  wordpress:
+    type: ClusterIP
+    port: 8080
+
+ingress:
+  enabled: true
+  className: "haproxy"
+  annotations:
+    haproxy.org/path-rewrite: |
+      /wordpress/(.*) /\1
+      /dbadmin/(.*) /\1
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: pooya-azarpour-nl-rg3.maxtld.dev
+      http:
+        paths:
+          - path: /wordpress
+            pathType: Prefix
+            backend:
+              service:
+                name: wordpress
+          - path: /dbadmin
+            pathType: Prefix
+            backend:
+              service:
+                name: phpmyadmin
+  tls: [ ]
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  mysql: { }
+  phpmyadmin: { }
+  wordpress: { }
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+# Additional volumes on the output Deployment definition.
+volumes:
+  mysql: [ ]
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  phpmyadmin: [ ]
+  wordpress: [ ]
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+  mysql: [ ]
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+  phpmyadmin: [ ]
+  wordpress: [ ]

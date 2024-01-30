@@ -1,0 +1,202 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.phpmyadmin.replicaCount }}
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      {{- with .Values.podAnnotations.phpmyadmin }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: phpmyadmin
+        {{- with .Values.podLabels.phpmyadmin }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: phpmyadmin
+          image: "{{ .Values.phpmyadmin.image.repository }}:{{ .Values.phpmyadmin.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.phpmyadmin.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+              name: web
+          env:
+            - name: PMA_HOST
+              value: "{{ printf "mysql-headless.%s.svc.%s" .Release.Namespace (include "wordpress.clusterDomain" .) }}"
+            - name: PMA_PORT
+              value: {{ .Values.service.mysql.port | quote }}
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress.mysql.rootPasswordSecret" . }}
+                  key: {{ include "wordpress.mysql.rootPasswordSecretKey" . }}
+            {{- if .Values.ingress.enabled }}
+            - name: PMA_ABSOLUTE_URI
+              {{- range $hostKey, $hostValue := .Values.ingress.hosts }}
+              {{- range $pathKey, $pathValue := $hostValue.http.paths }}
+              {{- if eq $pathValue.backend.service.name "phpmyadmin" }}
+              value: "http://{{ $hostValue.host }}{{ $pathValue.path }}/"
+              {{- end }}
+              {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- with .Values.volumeMounts.phpmyadmin }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources.phpmyadmin | nindent 12 }}
+      {{- with .Values.volumes.phpmyadmin }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "wordpress.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations.wordpress }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: wordpress
+        {{- with .Values.podLabels.wordpress }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: wordpress
+          image: "{{ .Values.wordpress.image.repository }}:{{ .Values.wordpress.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.wordpress.image.pullPolicy }}
+          env:
+            - name: WORDPRESS_DATABASE_HOST
+              value: "{{ printf "mysql-headless.%s.svc.%s" .Release.Namespace (include "wordpress.clusterDomain" .) }}"
+            - name: WORDPRESS_DATABASE_PORT_NUMBER
+              value: "{{ .Values.service.mysql.port }}"
+            - name: WORDPRESS_DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "wordpress.mysql.dbConfigmap" . }}
+                  key: {{ include "wordpress.mysql.dbConfigmapKey" . }}
+            - name: WORDPRESS_DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress.mysql.authSecret" . }}
+                  key: {{ include "wordpress.mysql.authUserSecretKey" . }}
+            - name: WORDPRESS_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress.mysql.authSecret" . }}
+                  key: {{ include "wordpress.mysql.authPassSecretKey" . }}
+            - name: WORDPRESS_BLOG_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "wordpress.wp.configBlogNameConfigmap" . }}
+                  key: {{ include "wordpress.wp.configBlogNameConfigmapKey" . }}
+            - name: WORDPRESS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress.wp.authUserSecret" . }}
+                  key: {{ include "wordpress.wp.authUserSecretKey" . }}
+            - name: WORDPRESS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wordpress.wp.authPassSecret" . }}
+                  key: {{ include "wordpress.wp.authPassSecretKey" . }}
+            - name: WORDPRESS_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "wordpress.wp.configEmailConfigmap" . }}
+                  key: {{ include "wordpress.wp.configEmailConfigmapKey" . }}
+            - name: WORDPRESS_FIRST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "wordpress.wp.configFirstNameConfigmap" . }}
+                  key: {{ include "wordpress.wp.configFirstNameConfigmapKey" . }}
+            - name: WORDPRESS_LAST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "wordpress.wp.configLastNameConfigmap" . }}
+                  key: {{ include "wordpress.wp.configLastNameConfigmapKey" . }}
+          ports:
+            - containerPort: 8080
+              name: wordpress
+          volumeMounts:
+            - mountPath: /bitnami/wordpress/
+              name: wordpress-bitnami-share
+            - name: wordpress-persistent-storage
+              mountPath: /var/www/html
+            {{- with .Values.volumeMounts.wordpress }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources.wordpress | nindent 12 }}
+        {{- if .Values.ingress.enabled }}
+        {{- range $hostKey, $hostValue := .Values.ingress.hosts }}
+        {{- range $pathKey, $pathValue := $hostValue.http.paths }}
+        {{- if eq $pathValue.backend.service.name "wordpress" }}
+        - name: ingress-absolute-url
+          image: "{{ $.Values.wordpress.image.repository }}:{{ $.Values.wordpress.image.tag | default "latest" }}"
+          imagePullPolicy: {{ $.Values.wordpress.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until [ -f /bitnami/wordpress/wp-config.php ]
+              do
+                sleep 1
+              done
+
+              until grep 'WP_HOME' /bitnami/wordpress/wp-config.php
+              do
+                sleep 1
+              done
+
+              sleep 3
+              sed -i -E "s|(.+(WP_HOME\|WP_SITEURL).+)'/'(.+)|\1'{{ $pathValue.path }}/'\3|g" /bitnami/wordpress/wp-config.php
+
+              while true
+              do
+                sleep 30
+              done
+          volumeMounts:
+            - mountPath: /bitnami/wordpress/
+              name: wordpress-bitnami-share
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+      volumes:
+        - name: wordpress-bitnami-share
+          emptyDir: { }
+        - name: wordpress-persistent-storage
+          persistentVolumeClaim:
+            claimName: wp-pv-claim
+        {{- with .Values.volumes.wordpress }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}

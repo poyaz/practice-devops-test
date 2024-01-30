@@ -1,0 +1,14 @@
+Get mysql root password:
+{{- if empty .Values.mysql.config.rootPassword.secretRef }}
+    > kubectl --namespace {{ .Release.Namespace }} get secret {{ include "wordpress.mysql.rootPasswordSecret" . }} -o jsonpath='{.data.{{ include "wordpress.mysql.rootPasswordSecretKey" . }}}' | base64 -d
+{{- else }}
+    > kubectl --namespace {{ .Release.Namespace }} get secret {{ .Values.mysql.config.rootPassword.secretRef }} -o jsonpath='{.data.{{ .Values.mysql.config.rootPassword.secretRefKey }}}' | base64 -d
+{{- end }}
+
+Get mysql custom username and password:
+  > kubectl --namespace {{ .Release.Namespace }} get secret {{ include "wordpress.mysql.authSecret" . }} -o jsonpath='{.data.{{ include "wordpress.mysql.authUserSecretKey" . }}}' | base64 -d
+  > kubectl --namespace {{ .Release.Namespace }} get secret {{ include "wordpress.mysql.authSecret" . }} -o jsonpath='{.data.{{ include "wordpress.mysql.authPassSecretKey" . }}}' | base64 -d
+
+Get WordPress username and password:
+  > kubectl --namespace {{ .Release.Namespace }} get secret {{ include "wordpress.wp.authUserSecret" . }} -o jsonpath='{.data.{{ include "wordpress.wp.authUserSecretKey" . }}}' | base64 -d
+  > kubectl --namespace {{ .Release.Namespace }} get secret {{ include "wordpress.wp.authPassSecret" . }} -o jsonpath='{.data.{{ include "wordpress.wp.authPassSecretKey" . }}}' | base64 -d

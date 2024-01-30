@@ -1,0 +1,43 @@
+{{- if empty .Values.mysql.config.dbName.configmapRef }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "wordpress.mysql.dbConfigmap" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
+data:
+  {{- $configObj := (lookup "v1" "ConfigMap" .Release.Namespace (include "wordpress.mysql.dbConfigmap" .)) | default dict }}
+  {{- $configData := (get $configObj "data") | default dict }}
+  {{- $data := (get $configData (include "wordpress.mysql.dbConfigmapKey" .)) | default (include "wordpress.mysql.dbName" .) }}
+  {{ include "wordpress.mysql.dbConfigmapKey" . }}: {{ $data | quote }}
+{{- end }}
+---
+{{- if or (empty .Values.wordpress.config.wordpressEmail.configmapRef) (empty .Values.wordpress.config.wordpressFirstName.configmapRef) (empty .Values.wordpress.config.wordpressLastName.configmapRef) (empty .Values.wordpress.config.wordpressBlogName.configmapRef) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "wordpress.wp.configConfigmap" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/resource-policy": "keep"
+data:
+  {{- $configObj := (lookup "v1" "ConfigMap" .Release.Namespace (include "wordpress.wp.configConfigmap" .)) | default dict }}
+  {{- $configData := (get $configObj "data") | default dict }}
+  {{- if empty .Values.wordpress.config.wordpressEmail.configmapRef }}
+  {{- $data := (get $configData (include "wordpress.wp.configEmailConfigmapKey" .)) | default (include "wordpress.wp.configEmail" .) }}
+  {{ include "wordpress.wp.configEmailConfigmapKey" . }}: {{ $data | quote }}
+  {{- end }}
+  {{- if empty .Values.wordpress.config.wordpressFirstName.configmapRef }}
+  {{- $data := (get $configData (include "wordpress.wp.configFirstNameConfigmapKey" .)) | default (include "wordpress.wp.configFirstName" .) }}
+  {{ include "wordpress.wp.configFirstNameConfigmapKey" . }}: {{ $data | quote }}
+  {{- end }}
+  {{- if empty .Values.wordpress.config.wordpressLastName.configmapRef }}
+  {{- $data := (get $configData (include "wordpress.wp.configLastNameConfigmapKey" .)) | default (include "wordpress.wp.configLastName" .) }}
+  {{ include "wordpress.wp.configLastNameConfigmapKey" . }}: {{ $data | quote }}
+  {{- end }}
+  {{- if empty .Values.wordpress.config.wordpressBlogName.configmapRef }}
+  {{- $data := (get $configData (include "wordpress.wp.configBlogNameConfigmapKey" .)) | default (include "wordpress.wp.configBlogName" .) }}
+  {{ include "wordpress.wp.configBlogNameConfigmapKey" . }}: {{ $data | quote }}
+  {{- end }}
+{{- end }}
