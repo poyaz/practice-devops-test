@@ -1,3 +1,4 @@
 resource "flux_bootstrap_git" "gitops" {
-  path = "ops/cluster"
+  depends_on = [module.kubespray_manual]
+  path       = "ops/cluster"
 }

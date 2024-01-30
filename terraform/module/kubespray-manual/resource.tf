@@ -1,6 +1,13 @@
 resource "null_resource" "git_clone" {
   provisioner "local-exec" {
-    command     = "git clone ${var.kubespray_git_repo} --depth ${var.kubespray_git_depth} --branch v2.23.2 ${var.kubespray_src_path}"
+    command     = <<EOF
+      if [ -d "${var.kubespray_src_path}" ]; then
+        cd ${var.kubespray_src_path}
+        git pull
+      else
+        git clone ${var.kubespray_git_repo} --depth ${var.kubespray_git_depth} --branch v2.23.2 "${var.kubespray_src_path}"
+      fi
+    EOF
     interpreter = ["sh", "-c"]
   }
 }
@@ -64,7 +71,7 @@ resource "null_resource" "kubespray_ansible_install" {
     command     = <<EOF
       cd ${var.kubespray_src_path}
       source ${module.kubespray_virtualenv_path.path}
-      ansible-playbook -i ${module.kubespray_ansible_inventory.path} --become --become-user=root cluster.yml -e @${module.kubespray_ansible_vars.path}
+      ansible-playbook -i ${module.kubespray_ansible_inventory.path} --become --become-user=root cluster.yml -e @${module.kubespray_ansible_vars.path} -e "ansible_ssh_common_args='-o StrictHostKeychecking=no -o UserKnownHostsFile=/dev/null'"
     EOF
     interpreter = ["sh", "-c"]
   }

@@ -1,5 +1,5 @@
-download_run_once: true
-download_keep_remote_cache: true
+download_run_once: ${download_run_once}
+download_keep_remote_cache: ${download_keep_remote_cache}
 kubeconfig_localhost: true
 kubectl_localhost: false
 
@@ -11,4 +11,8 @@ http_proxy: "${http_proxy}"
 %{ endif ~}
 %{ if https_proxy != "" ~}
 https_proxy: "${https_proxy}"
+%{ endif ~}
+
+%{ if extra_vars_data != "" ~}
+${extra_vars_data}
 %{ endif ~}

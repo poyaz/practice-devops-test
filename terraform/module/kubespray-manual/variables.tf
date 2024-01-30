@@ -40,12 +40,25 @@ variable "machines" {
   type        = map(object({
     node_type = string
     node_ip   = string
+    ip = string
     ssh       = object({
       port     = number
       username = string
       password = string
     })
   }))
+}
+
+variable "kubespray_install_download_run_once" {
+  type     = string
+  default  = "false"
+  nullable = false
+}
+
+variable "kubespray_install_download_keep_remote_cache" {
+  type     = string
+  default  = "false"
+  nullable = false
 }
 
 variable "kubespray_install_proxy_http" {
@@ -55,6 +68,12 @@ variable "kubespray_install_proxy_http" {
 }
 
 variable "kubespray_install_proxy_https" {
+  type     = string
+  default  = ""
+  nullable = false
+}
+
+variable "kubespray_install_extra_vars_data" {
   type     = string
   default  = ""
   nullable = false
