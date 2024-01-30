@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - $PWD/terraform:/app
+      - $PWD/kubeconf:/kubeconf
     working_dir: /app
     network_mode: host
     entrypoint: /bin/sh

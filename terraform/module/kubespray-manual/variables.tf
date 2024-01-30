@@ -29,6 +29,12 @@ variable "kubespray_inventory_folder" {
   default = "inventory/k8s-test"
 }
 
+variable "kubespray_kubeconf_save_path" {
+  type     = string
+  default  = "/kubeconf"
+  nullable = false
+}
+
 variable "machines" {
   description = "Cluster machines"
   type        = map(object({
@@ -43,13 +49,13 @@ variable "machines" {
 }
 
 variable "kubespray_install_proxy_http" {
-  type = string
-  default = ""
+  type     = string
+  default  = ""
   nullable = false
 }
 
 variable "kubespray_install_proxy_https" {
-  type = string
-  default = ""
+  type     = string
+  default  = ""
   nullable = false
 }

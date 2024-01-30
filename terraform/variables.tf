@@ -21,12 +21,19 @@ variable "kubespray_src_path" {
   default = null
 }
 
+variable "kubespray_kubeconf_save_path" {
+  type     = string
+  default = null
+}
+
 variable "kubespray_install_proxy_http" {
   type = string
+  default = null
 }
 
 variable "kubespray_install_proxy_https" {
   type = string
+  default = null
 }
 
 variable "flux_git_repo" {

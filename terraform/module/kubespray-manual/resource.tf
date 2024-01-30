@@ -69,3 +69,13 @@ resource "null_resource" "kubespray_ansible_install" {
     interpreter = ["sh", "-c"]
   }
 }
+
+resource "null_resource" "kubespray_save_kubeconf" {
+  depends_on = [null_resource.kubespray_ansible_install]
+  provisioner "local-exec" {
+    command     = <<EOF
+      cp ${module.kubespray_kube_config.path} ${var.kubespray_kubeconf_save_path}
+    EOF
+    interpreter = ["sh", "-c"]
+  }
+}

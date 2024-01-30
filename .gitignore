@@ -6,6 +6,9 @@ docker/custom/*
 tfvars/*
 !tfvars/.gitkeep
 
+kubeconf/*
+!kubeconf/.gitkeep
+
 ### Vagrant template
 
 .vagrant/
