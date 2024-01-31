@@ -96,6 +96,7 @@ ingress:
     haproxy.org/path-rewrite: |
       /wordpress/(.*) /\1
       /dbadmin/(.*) /\1
+    cert-manager.io/cluster-issuer: acme-issuer
   # kubernetes.io/ingress.class: nginx
   # kubernetes.io/tls-acme: "true"
   hosts:
