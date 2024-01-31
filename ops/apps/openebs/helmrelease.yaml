@@ -1,0 +1,22 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: openebs
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: localpv-provisioner
+      sourceRef:
+        kind: HelmRepository
+        name: openebs
+        namespace: flux-system
+  interval: 1m
+  releaseName: openebs
+  targetNamespace: openebs
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  values: {}
