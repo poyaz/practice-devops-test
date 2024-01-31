@@ -1,0 +1,23 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: wordpress
+  namespace: flux-system
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./charts/wordpress
+      version: '0.1.*'
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+      interval: 1m
+  releaseName: wordpress
+  targetNamespace: wordpress
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  values: { }

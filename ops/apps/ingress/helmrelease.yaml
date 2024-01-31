@@ -1,0 +1,35 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: haproxy
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: kubernetes-ingress
+      sourceRef:
+        kind: HelmRepository
+        name: haproxy
+        namespace: flux-system
+  interval: 1m
+  releaseName: haproxy
+  targetNamespace: haproxy
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  values:
+    controller:
+      kind: "DaemonSet"
+      containerPort:
+        http: 80
+        https: 443
+        stat: 1024
+      daemonset:
+        useHostNetwork: true
+        useHostPort: true
+        hostPorts:
+          http: 80
+          https: 443
+          stat: 1024
