@@ -2,6 +2,7 @@ machines = {
   "master-0" : {
     node_type : "both",
     node_ip : "",
+    # If you server behind the NAT network, then fill it wih your private ip
     ip : "",
     ssh : {
       port     = 22
