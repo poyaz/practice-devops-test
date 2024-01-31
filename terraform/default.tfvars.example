@@ -15,3 +15,9 @@ flux_git_http_auth = {
   username: ""
   password: ""
 }
+
+### If you don't use docker, please fill below variables
+########################################################
+
+kubespray_src_path: ""
+kubespray_kubeconf_save_path: ""

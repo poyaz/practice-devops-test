@@ -32,6 +32,9 @@ test-clear:
 
 .PHONY: run
 run:
+	terraform init --upgrade
+	terraform plan -var-file $(TERRAFORM_VAR_FILE)
+	terraform apply -var-file $(TERRAFORM_VAR_FILE) -auto-approve
 
 .PHONY: run-with-docker
 run-with-docker: build-image

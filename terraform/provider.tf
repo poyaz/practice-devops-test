@@ -5,7 +5,7 @@ provider "flux" {
   git = {
     url    = var.flux_git_repo
     branch = var.flux_git_branch
-    http   = {
+    http = {
       username = var.flux_git_http_auth.username
       password = var.flux_git_http_auth.password
     }

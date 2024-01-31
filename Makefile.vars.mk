@@ -8,6 +8,8 @@ E2E_COMPOSE_CLI = docker compose -f docker-compose.yml $(COMPOSE_OPTIONS) $(E2E_
 COMPOSE_CLI = docker compose -f docker-compose.yml $(COMPOSE_OPTIONS)
 COMPOSE_RUN_SERVICE = run --rm --entrypoint '' -T terraform sh
 
+TERRAFORM_VAR_FILE = ./product.tfvars
+
 define E2E_TERRAFORM_VARS
 machines = {
   "master-0" : {
@@ -29,16 +31,16 @@ endif
 
 define E2E_DOCKER_EXEC
 E2E_NO_PROXY=$(VAGRANT_SERVER_IP) $(E2E_COMPOSE_CLI) $(COMPOSE_RUN_SERVICE) <<'EOF'
-	ls -al
-	whoami
-	ls /tmp/vars
-	cat /tmp/vars
+	terraform init --upgrade
+	terraform plan -var-file /tmp/vars/testing.tfvars
+	terraform apply -var-file /tmp/vars/testing.tfvars -auto-approve
 EOF
 endef
 
 define DOCKER_EXEC
 $(COMPOSE_CLI) $(COMPOSE_RUN_SERVICE) <<'EOF'
-	ls -al
-	whoami
+	terraform init --upgrade
+	terraform plan -var-file $(TERRAFORM_VAR_FILE)
+	terraform apply -var-file $(TERRAFORM_VAR_FILE) -auto-approve
 EOF
 endef
