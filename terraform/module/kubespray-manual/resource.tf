@@ -77,8 +77,18 @@ resource "null_resource" "kubespray_ansible_install" {
   }
 }
 
-resource "null_resource" "kubespray_save_kubeconf" {
+resource "null_resource" "kubespray_replace_kubeconf_host" {
   depends_on = [null_resource.kubespray_ansible_install]
+  provisioner "local-exec" {
+    command     = <<EOF
+      sed -i -E 's/(.+)[1-9][0-9]{1,2}(\.[0-9]{1,3}){3}(.*)/\1${local.list_master_ips[0]}\3/g' ${module.kubespray_kube_config.path}
+    EOF
+    interpreter = ["sh", "-c"]
+  }
+}
+
+resource "null_resource" "kubespray_save_kubeconf" {
+  depends_on = [null_resource.kubespray_replace_kubeconf_host]
   provisioner "local-exec" {
     command     = <<EOF
       cp ${module.kubespray_kube_config.path} ${var.kubespray_kubeconf_save_path}

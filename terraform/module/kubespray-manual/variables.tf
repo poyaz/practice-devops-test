@@ -40,11 +40,14 @@ variable "machines" {
   type        = map(object({
     node_type = string
     node_ip   = string
-    ip = string
+    ip        = optional(string)
+    access_ip = optional(string)
     ssh       = object({
-      port     = number
-      username = string
-      password = string
+      port          = number
+      username      = string
+      password      = string
+      sudo_username = optional(string)
+      sudo_password = optional(string)
     })
   }))
 }

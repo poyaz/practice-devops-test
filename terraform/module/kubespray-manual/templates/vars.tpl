@@ -2,6 +2,9 @@ download_run_once: ${download_run_once}
 download_keep_remote_cache: ${download_keep_remote_cache}
 kubeconfig_localhost: true
 kubectl_localhost: false
+%{ if addresses_in_ssl_keys != "" ~}
+supplementary_addresses_in_ssl_keys: ${addresses_in_ssl_keys}
+%{ endif ~}
 
 kube_network_plugin: flannel
 

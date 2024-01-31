@@ -8,11 +8,14 @@ variable "machines" {
   type        = map(object({
     node_type = string
     node_ip   = string
-    ip = string
+    ip        = optional(string)
+    access_ip = optional(string)
     ssh       = object({
-      port     = number
-      username = string
-      password = string
+      port          = number
+      username      = string
+      password      = string
+      sudo_username = optional(string)
+      sudo_password = optional(string)
     })
   }))
 }
@@ -28,12 +31,12 @@ variable "kubespray_kubeconf_save_path" {
 }
 
 variable "kubespray_install_download_run_once" {
-  type     = string
+  type    = string
   default = null
 }
 
 variable "kubespray_install_download_keep_remote_cache" {
-  type     = string
+  type    = string
   default = null
 }
 
@@ -48,7 +51,7 @@ variable "kubespray_install_proxy_https" {
 }
 
 variable "kubespray_install_extra_vars_data" {
-  type     = string
+  type    = string
   default = null
 }
 
