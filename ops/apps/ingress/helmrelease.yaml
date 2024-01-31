@@ -22,6 +22,7 @@ spec:
   values:
     controller:
       kind: "DaemonSet"
+      unprivileged: false
       allowPrivilegeEscalation: true
       containerPort:
         http: 80
