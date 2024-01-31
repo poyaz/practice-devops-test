@@ -113,10 +113,10 @@ ingress:
             backend:
               service:
                 name: phpmyadmin
-  tls: [ ]
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls:
+     - secretName: pooya-azarpour-nl-rg3-tls
+       hosts:
+         - pooya-azarpour-nl-rg3.maxtld.dev
 
 resources:
   mysql: { }
