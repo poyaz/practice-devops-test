@@ -17,9 +17,12 @@ The steps for installing cluster and running services are as follows:
 4. The resources are as follows
    * The cert-manager for generating the cert
    * The acme-issuer for Let's Encrypt cert
-   * The ingress (haproxy) for the ingress controller and proxy service
-   * The openebs for managing local path provisioner
+   * The ingress (Haproxy) for the ingress controller and proxy service
+   * The OpenEBS for managing local path provisioner
    * The WordPress for installing WordPress, PHPMyAdmin, and Mysql (This is a custom helm chart was written by me)
+  
+Maybe you ask yourself, why I install ingress and cert-manager with gitops (not using the Kubespray). I prefer installing them with gitops because, in my opinion, it helps to manage and test better in every environment. Or like the ingress service, I prefer using the haproxy. If you ask me, It depends on your idea and your structure to how to use and install services.
+Also, for chart same. I prefer to write a custom helm chart for installing and configuring WordPress. The bitnami repo is so good and useful, but i just using my chart to deploy the WordPress.
 
 Requirements
 ============
