@@ -14,7 +14,7 @@ define E2E_TERRAFORM_VARS
 machines = {
   "master-0" : {
     node_type : "both",
-    node_ip : "192.168.121.104",
+    node_ip : "$(VAGRANT_SERVER_IP)",
     ssh : {
       port     = 22
       username = "vagrant"
