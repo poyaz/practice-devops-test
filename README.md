@@ -9,9 +9,9 @@ Design
 
 The steps for installing cluster and running services are as follows:
 
-1. First we use Terraform for installing k8s cluster
+1. First I use Terraform for installing k8s cluster
 2. The terraform contains two parts.
-   * The first part, installs the k8s cluster with the Kubespray. It clones the Kubespray project and installs all of the dependencies. then execute the ansible command for installation.
+   * The first part, is a module for installing the k8s cluster by the Kubespray. It was cloned the Kubespray project and installed all of the dependencies. then execute the ansible command for installation.
    * The second part, install and configure the Flux service in the k8s cluster for using gitops.
 3. After installing the Flux successfully, the Flux service fetches all resources for deploying in k8s cluster
 4. The resources are as follows
