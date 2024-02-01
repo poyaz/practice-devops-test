@@ -32,6 +32,7 @@ test-clear:
 
 .PHONY: run
 run:
+	cd ./terraform
 	terraform init --upgrade
 	terraform plan -var-file $(TERRAFORM_VAR_FILE)
 	terraform apply -var-file $(TERRAFORM_VAR_FILE) -auto-approve
