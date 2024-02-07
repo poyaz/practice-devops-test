@@ -4,7 +4,7 @@ export E2E_TERRAFORM_VARS
 export E2E_DOCKER_EXEC
 export DOCKER_EXEC
 
-.PHONY: build-e2e-image
+.PHONY: build-image
 build-image:
 	docker compose -f docker-compose.yml $(COMPOSE_OPTIONS) build
 
